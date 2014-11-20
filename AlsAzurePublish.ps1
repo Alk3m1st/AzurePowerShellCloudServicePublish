@@ -3,6 +3,7 @@
 # which is based on Microsoft provided guidance example at
 #      https://www.windowsazure.com/en-us/develop/net/common-tasks/continuous-delivery/.
 # basically stripped down for what I needed.
+# Maintained here .... https://github.com/Alk3m1st/AzurePowerShellCloudServicePublish
 
 
 Param(  
