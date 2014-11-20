@@ -24,6 +24,9 @@ Param(
 		$location
      )
 
+$packageLocation += (ls $packageLocation | where {$_.extension -eq '.cspkg'}).Name
+write-output "Found Package at $packageLocation"
+	 
 function Publish()
 {	
 	CheckServiceExists
@@ -184,19 +187,23 @@ if ($cert -eq $null)
 	exit 1
 }
 
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
+Import-Module "C:\Program Files (x86)\Microsoft SDKs\Azure\PowerShell\ServiceManagement\Azure\Azure.psd1"
+
 # Manually set the Windows Azure subscription details.
 $subscriptionTemp = Get-AzureSubscription | Where-Object {$_.SubscriptionName -eq $selectedSubscription}
 
-#if ($subscriptionTemp -eq $null)
-#{
-	Set-AzureSubscription -CurrentStorageAccount $storageAccountName -SubscriptionName $selectedSubscription -Certificate $cert #-SubscriptionId $subscriptionId
-#}
+if ($subscriptionTemp -eq $null)
+{
+	Set-AzureSubscription -SubscriptionName $selectedSubscription -Certificate $cert -SubscriptionId $subscriptionId
+	Set-AzureSubscription -SubscriptionName $selectedSubscription -CurrentStorageAccount $storageAccountName
+}
 
 # Clear out any previous Windows Azure subscription details in the current context (just to be safe).
 Select-AzureSubscription -NoCurrent
 
 # Select (by friendly name entered in the 'Set-AzureSubscription' cmdlet) the Windows Azure subscription to use.
-Select-AzureSubscription $selectedSubscription
+Select-AzureSubscription -Current $selectedSubscription
 
 
 # Build the label for the deployment. Currently using the current time. Can be pretty much anything.
